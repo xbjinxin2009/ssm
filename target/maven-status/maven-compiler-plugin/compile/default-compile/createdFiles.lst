@@ -1,0 +1,16 @@
+com\topscit\ssm\dao\RoleMapper.class
+com\topscit\ssm\service\QuestionService.class
+com\topscit\ssm\controller\LoginController.class
+com\topscit\ssm\controller\UserController.class
+com\topscit\ssm\bean\Permission.class
+com\topscit\ssm\dao\QuestionMapper.class
+com\topscit\ssm\bean\Question.class
+com\topscit\ssm\dao\UserMapper.class
+com\topscit\ssm\service\QuestionServiceImpl.class
+com\topscit\ssm\bean\Role.class
+com\topscit\ssm\service\UserServiceImpl.class
+com\topscit\ssm\controller\QuestionController.class
+com\topscit\ssm\service\UserService.class
+com\topscit\ssm\realm\MyRalm.class
+com\topscit\ssm\bean\User.class
+com\topscit\ssm\dao\PermissionMapper.class

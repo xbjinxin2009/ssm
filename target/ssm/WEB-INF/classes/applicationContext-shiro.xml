@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+            http://www.springframework.org/schema/beans/spring-beans.xsd
+            http://www.springframework.org/schema/context
+            http://www.springframework.org/schema/context/spring-context.xsd">
+	
+	<!-- 匹配器 -->
+	<bean id="credentialsMatcher" class="org.apache.shiro.authc.credential.HashedCredentialsMatcher" >
+		<property name="hashAlgorithmName" value="md5"  ></property>
+		<property name="hashIterations" value="1" ></property>
+	</bean>
+	
+	<!-- 自定义域：需要注入匹配器 -->
+	<bean id="myrealm" class="com.topscit.ssm.realm.MyRalm" >
+		<property name="credentialsMatcher" ref="credentialsMatcher" ></property>
+	</bean>
+	
+	<!-- 缓存管理器：用于在内存中存储信息 -->
+	<bean id="cacheManager" class="org.apache.shiro.cache.ehcache.EhCacheManager" ></bean>
+	
+	<!-- 会话管理器 模拟session效果 -->
+	<bean id="sessionManager" class="org.apache.shiro.web.session.mgt.DefaultWebSessionManager"  >
+		<!-- 设置session信息最大不活动时间：单位是毫秒 -->
+		<property name="globalSessionTimeout" value="1800000"  ></property>
+		<!-- 删除超时的会话信息 -->
+		<property name="deleteInvalidSessions" value="true" ></property>
+	</bean>
+	
+	<!-- 安全管理器 -->
+	<bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager" >
+		<property name="realms" ref="myrealm" ></property>
+		<property name="cacheManager" ref="cacheManager" ></property>
+		<property name="sessionManager" ref="sessionManager" ></property>
+	</bean>
+	
+	<!-- 表单认证器 -->
+	<bean id="formAuthenticationFilter" class="org.apache.shiro.web.filter.authc.FormAuthenticationFilter" >
+		<property name="loginUrl" value="/login" ></property>
+		<property name="usernameParam" value="username" ></property>
+		<property name="passwordParam" value="password" ></property>
+	</bean>
+	
+	<!-- 退出登陆 -->
+	<bean id="logoutFilter" class="org.apache.shiro.web.filter.authc.LogoutFilter" >
+		<property name="redirectUrl" value="/login.jsp" ></property>
+	</bean>
+	
+	<!-- 配置过滤器工厂类 -->
+	<bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean" >
+		<property name="securityManager" ref="securityManager" ></property>	
+		
+		<!-- 配置登陆页面 -->
+		<property name="loginUrl" value="/login.jsp" ></property>
+		
+		<!-- 配置登陆成功之后的跳转路径  -->
+		<property name="successUrl" value="/user/info" ></property>
+		
+		<property name="unauthorizedUrl" value="/authorized.jsp" ></property>
+		
+		
+		<!-- 配置登陆和登出：引入bean -->
+		<property name="filters">
+			<map>
+				<entry key="authc" value-ref="formAuthenticationFilter" ></entry>
+				<entry key="logout" value-ref="logoutFilter"></entry>
+			</map>
+		</property>
+		
+		<!-- 配置请求的拦截或不拦截 -->
+		<property name="filterChainDefinitions"  >
+			<value>
+				/js/**=anon
+				/css/**=anon
+				/img/**=anon
+				/upload/**=anon
+				/main.jsp=anon
+				
+				/login.jsp=anon
+				<!-- 退出 -->
+				/logout=logout
+				
+				<!-- 需要认证 -->
+				/**=authc
+				
+			</value>
+		</property>
+	</bean>
+   
+</beans>    		
+    		
